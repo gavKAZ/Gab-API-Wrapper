@@ -567,7 +567,7 @@
     "__docId__": 48,
     "kind": "file",
     "name": "lib/Gab.js",
-    "content": "const axios = require('axios');\n\nlet maybeJson;\n\n/**\n * Create a new Gab client.\n * @param options\n * @param options.authToken - User's auth token.\n * @param options.stringify - (Optional) If true, will return stringified JSON.\n * @param options.timeout - (Optional) Specify a custom timeout. Default 5000 milliseconds.\n * @constructor\n */\nconst Gab = function(options) {\n  this.options = options;\n\n  axios.defaults.baseURL = 'https://api.gab.com/v1.0/';\n  axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.options.authToken;\n  axios.defaults.responseType = 'json';\n  axios.defaults.timeout = options.timeout ? options.timeout : 5000;\n\n  maybeJson = obj => {\n    if(this.options.stringify) {\n      return JSON.stringify(obj);\n    }\n\n    return obj;\n  }\n};\n\n/**\n * Returns the user's account information.\n * Requires 'read' scope.\n */\nGab.prototype.me = () => {\n  return new Promise(resolve => {\n    axios.get('me')\n      .then(response => {\n        resolve(maybeJson(response));\n      });\n  });\n};\n\n/**\n * Returns a user's profile.\n * Requires 'read' scope.\n * @param username\n * @returns {Promise<object,string>}\n */\nGab.prototype.user = username => {\n  return new Promise(resolve => {\n    const url = `users/${username}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a user's followers.\n * Requires 'read' scope.\n * @param username\n * @param before\n * @returns {Promise<object,string>}\n */\nGab.prototype.followers = (username, before = 0) => {\n  return new Promise(resolve => {\n    const url = `users/${username}/followers?before=${before}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a user's followed.\n * Requires 'read' scope.\n * @param username\n * @param before\n * @returns {Promise<object,string>}\n */\nGab.prototype.following = (username, before = 0) => {\n  return new Promise(resolve => {\n    const url = `users/${username}/following?before=${before}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a user's notifications.\n * Requires 'notifications' scope.\n * @param before\n * @returns {Promise<object,string>}\n */\nGab.prototype.notifications = (before = 0) => {\n  return new Promise(resolve => {\n    const url = `notifications/?before=${before}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns the main feed.\n * Requires 'read' scope.\n * @param before\n * @returns {Promise<object,string>}\n */\nGab.prototype.mainFeed = (before = '') => {\n  return new Promise(resolve => {\n    const url = `feed/?before=${before}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a user's feed.\n * Requires the 'read' scope.\n * @param username\n * @param before\n * @returns {Promise<object,string>}\n */\nGab.prototype.userFeed = (username, before = '') => {\n  return new Promise(resolve => {\n    const url = `users/${username}/feed/?before=${before}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns the popular feed.\n * Requires the 'read' scope.\n * @returns {Promise<object,string>}\n */\nGab.prototype.popularFeed = () => {\n  return new Promise(resolve => {\n    const url = `popular/feed`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns popular users.\n * Requires the 'read' scope.\n * @returns {Promise<object,string>}\n */\nGab.prototype.popularUsers = () => {\n  return new Promise(resolve => {\n    const url = `popular/users`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Follow a user.\n * Requires the 'engage-user' scope.\n * @param userId\n * @returns {Promise<object,string>}\n */\nGab.prototype.follow = userId => {\n  return new Promise(resolve => {\n    const url = `users/${userId}/follow`;\n\n    axios.post(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Unfollow a user.\n * Requires the 'engage-user' scope.\n * @param userId\n * @returns {Promise<object,string>}\n */\nGab.prototype.unfollow = userId => {\n  return new Promise(resolve => {\n    const url = `users/${userId}/follow`;\n\n    axios.delete(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Upvote a post.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.upvote = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}/upvote`;\n\n    axios.post(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Remove an upvote for a post.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.removeUpvote = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}/upvote`;\n\n    axios.delete(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Downvote a post.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.downvote = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}/downvote`;\n\n    axios.post(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Remove a downvote for a post.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.removeDownvote = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}/downvote`;\n\n    axios.delete(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Repost a post.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.repost = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}/repost`;\n\n    axios.post(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Remove a repost.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.removeRepost = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}/repost`;\n\n    axios.delete(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a post's details.\n * Requires the 'engage-post' scope.\n * @param postId\n * @returns {Promise<object,string>}\n */\nGab.prototype.postDetails = postId => {\n  return new Promise(resolve => {\n    const url = `posts/${postId}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns popular groups.\n * Requires the 'read' scope.\n * @returns {Promise<object,string>}\n */\nGab.prototype.popularGroups = () => {\n  return new Promise(resolve => {\n    const url = `groups`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a group's details.\n * Requires the 'read' scope.\n * @param groupId\n * @returns {Promise<object,string>}\n */\nGab.prototype.groupDetails = groupId => {\n  return new Promise(resolve => {\n    const url = `groups/${groupId}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a group's users.\n * Requires the 'read' scope.\n * @param groupId\n * @param before\n * @returns {Promise<object,string>}\n */\nGab.prototype.groupUsers = (groupId, before = 0) => {\n  return new Promise(resolve => {\n    const url = `groups/${groupId}/users?before=${before}`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Returns a group's moderation logs.\n * Requires the 'read' scope.\n * @param groupId\n * @returns {Promise<object,string>}\n */\nGab.prototype.groupModerationLogs = groupId => {\n  return new Promise(resolve => {\n    const url = `groups/${groupId}/moderation-logs`;\n\n    axios.get(url)\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Creates a media attachment.\n * Requires the 'write-posts' scope.\n * @param file\n * @returns {Promise<object,string>}\n */\nGab.prototype.createMediaAttachment = file => {\n  return new Promise(resolve => {\n    const url = `media-attachments/images`;\n\n    axios.post(url, {\n      file: file\n    })\n      .then(response => {\n        resolve(maybeJson(response.data));\n      });\n  });\n};\n\n/**\n * Create a new post.\n * @param options\n * @param options.media_attachments[] - Media attachment ID created using createMediaAttachment. Up to four attachments.\n * @param options.gif - Giphy gif ID\n * @param options.body - Post body\n * @param options.reply_to - Id of the post to reply to.\n * @param options.is_quote - 1 if you want to create this as a quote.\n * @param options.nsfw - 1 if post is NSFW.\n * @param options.premium_min_tier - Used to mark a premium post. Amount, in cents, that user's should pay monthly for this post to be visible.\n * @param options.group - ID of group to post to.\n * @param options.topic - Topic for the post.\n * @param options.poll - 1 if you want to add a poll. Requires poll_option_1 and poll_option_2. poll_option_3 and poll_option_4 are optional.\n * @param options.poll_option_1 - Poll option\n * @param options.poll_option_2 - Poll option\n * @param options.poll_option_3 - Poll option\n * @param options.poll_option_4 - Poll option\n * @returns {Promise<object,string>}\n */\nGab.prototype.createPost = options => {\n  return new Promise(resolve => {\n    const url = `posts`;\n\n    axios.post(url, options)\n      .then((response,) => {\n        resolve(maybeJson(response.data));\n      })\n      .catch(e => {\n        console.log(e);\n      });\n  });\n};\n\nmodule.exports = Gab;\n",
+    "content": "const axios = require('axios');\n\nlet maybeJson;\n\nclass Gab {\n  /**\n   * Create a new Gab client.\n   * @param options\n   * @param options.authToken - User's auth token.\n   * @param options.stringify - (Optional) If true, will return stringified JSON.\n   * @param options.timeout - (Optional) Specify a custom timeout. Default 5000 milliseconds.\n   * @constructor\n   */\n  constructor(options) {\n    this.options = options;\n\n    axios.defaults.baseURL = 'https://api.gab.com/v1.0/';\n    axios.defaults.headers.common['Authorization'] = 'Bearer ' + this.options.authToken;\n    axios.defaults.responseType = 'json';\n    axios.defaults.timeout = options.timeout ? options.timeout : 5000;\n\n    maybeJson = obj => {\n      if(this.options.stringify) {\n        return JSON.stringify(obj);\n      }\n\n      return obj;\n    }\n  }\n\n  /**\n   * Returns the user's account information.\n   * Requires 'read' scope.\n   */\n  me() {\n    return new Promise(resolve => {\n      axios.get('me')\n        .then(response => {\n          resolve(maybeJson(response));\n        });\n    });\n  }\n\n  /**\n   * Returns a user's profile.\n   * Requires 'read' scope.\n   * @param username\n   * @returns {Promise<object,string>}\n   */\n  user(username) {\n    return new Promise(resolve => {\n      const url = `users/${username}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Returns a user's followers.\n   * Requires 'read' scope.\n   * @param username\n   * @param before\n   * @returns {Promise<object,string>}\n   */\n  followers(username, before = 0) {\n    return new Promise(resolve => {\n      const url = `users/${username}/followers?before=${before}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Returns a user's followed.\n   * Requires 'read' scope.\n   * @param username\n   * @param before\n   * @returns {Promise<object,string>}\n   */\n  following(username, before = 0) {\n    return new Promise(resolve => {\n      const url = `users/${username}/following?before=${before}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Returns a user's notifications.\n   * Requires 'notifications' scope.\n   * @param before\n   * @returns {Promise<object,string>}\n   */\n  notifications(before = 0) {\n    return new Promise(resolve => {\n      const url = `notifications/?before=${before}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  mainFeed(before = '') {\n    return new Promise(resolve => {\n      const url = `feed/?before=${before}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Returns a user's feed.\n   * Requires the 'read' scope.\n   * @param username\n   * @param before\n   * @returns {Promise<object,string>}\n   */\n  userFeed(username, before = '') {\n    return new Promise(resolve => {\n      const url = `users/${username}/feed/?before=${before}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Returns the popular feed.\n   * Requires the 'read' scope.\n   * @returns {Promise<object,string>}\n   */\n  popularFeed() {\n    return new Promise(resolve => {\n      const url = `popular/feed`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Returns popular users.\n   * Requires the 'read' scope.\n   * @returns {Promise<object,string>}\n   */\n  popularUsers() {\n    return new Promise(resolve => {\n      const url = `popular/users`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Follow a user.\n   * Requires the 'engage-user' scope.\n   * @param userId\n   * @returns {Promise<object,string>}\n   */\n  follow(userId) {\n    return new Promise(resolve => {\n      const url = `users/${userId}/follow`;\n\n      axios.post(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Unfollow a user.\n   * Requires the 'engage-user' scope.\n   * @param userId\n   * @returns {Promise<object,string>}\n   */\n  unfollow(userId) {\n    return new Promise(resolve => {\n      const url = `users/${userId}/follow`;\n\n      axios.delete(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Upvote a post.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  upvote(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}/upvote`;\n\n      axios.post(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Remove an upvote for a post.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  removeUpvote(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}/upvote`;\n\n      axios.delete(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Downvote a post.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  downvote(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}/downvote`;\n\n      axios.post(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Remove a downvote for a post.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  removeDownvote(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}/downvote`;\n\n      axios.delete(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Repost a post.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  repost(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}/repost`;\n\n      axios.post(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Remove a repost.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  removeRepost(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}/repost`;\n\n      axios.delete(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Returns a post's details.\n   * Requires the 'engage-post' scope.\n   * @param postId\n   * @returns {Promise<object,string>}\n   */\n  postDetails(postId) {\n    return new Promise(resolve => {\n      const url = `posts/${postId}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Returns popular groups.\n   * Requires the 'read' scope.\n   * @returns {Promise<object,string>}\n   */\n  popularGroups() {\n    return new Promise(resolve => {\n      const url = `groups`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Returns a group's details.\n   * Requires the 'read' scope.\n   * @param groupId\n   * @returns {Promise<object,string>}\n   */\n  groupDetails(groupId) {\n    return new Promise(resolve => {\n      const url = `groups/${groupId}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Returns a group's users.\n   * Requires the 'read' scope.\n   * @param groupId\n   * @param before\n   * @returns {Promise<object,string>}\n   */\n  groupUsers(groupId, before = 0) {\n    return new Promise(resolve => {\n      const url = `groups/${groupId}/users?before=${before}`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  };\n\n  /**\n   * Returns a group's moderation logs.\n   * Requires the 'read' scope.\n   * @param groupId\n   * @returns {Promise<object,string>}\n   */\n  groupModerationLogs(groupId) {\n    return new Promise(resolve => {\n      const url = `groups/${groupId}/moderation-logs`;\n\n      axios.get(url)\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Creates a media attachment.\n   * Requires the 'write-posts' scope.\n   * @param file\n   * @returns {Promise<object,string>}\n   */\n  createMediaAttachment(file) {\n    return new Promise(resolve => {\n      const url = `media-attachments/images`;\n\n      axios.post(url, {\n        file: file\n      })\n        .then(response => {\n          resolve(maybeJson(response.data));\n        });\n    });\n  }\n\n  /**\n   * Create a new post.\n   * @param options\n   * @param options.media_attachments[] - Media attachment ID created using createMediaAttachment. Up to four attachments.\n   * @param options.gif - Giphy gif ID\n   * @param options.body - Post body\n   * @param options.reply_to - Id of the post to reply to.\n   * @param options.is_quote - 1 if you want to create this as a quote.\n   * @param options.nsfw - 1 if post is NSFW.\n   * @param options.premium_min_tier - Used to mark a premium post. Amount, in cents, that user's should pay monthly for this post to be visible.\n   * @param options.group - ID of group to post to.\n   * @param options.topic - Topic for the post.\n   * @param options.poll - 1 if you want to add a poll. Requires poll_option_1 and poll_option_2. poll_option_3 and poll_option_4 are optional.\n   * @param options.poll_option_1 - Poll option\n   * @param options.poll_option_2 - Poll option\n   * @param options.poll_option_3 - Poll option\n   * @param options.poll_option_4 - Poll option\n   * @returns {Promise<object,string>}\n   */\n  createPost(options) {\n    return new Promise(resolve => {\n      const url = `posts`;\n\n      axios.post(url, options)\n        .then((response,) => {\n          resolve(maybeJson(response.data));\n        })\n        .catch(e => {\n          console.log(e);\n        });\n    });\n  }\n}\n\nmodule.exports = Gab;\n",
     "static": true,
     "longname": "/home/yoh/Projects/Gab-API-Wrapper/lib/Gab.js",
     "access": "public",
@@ -576,40 +576,32 @@
   },
   {
     "__docId__": 49,
-    "kind": "variable",
-    "name": "axios",
-    "memberof": "lib/Gab.js",
-    "static": true,
-    "longname": "lib/Gab.js~axios",
-    "access": "public",
-    "export": false,
-    "importPath": "gab-api-wrapper/lib/Gab.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 1,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    },
-    "ignore": true
-  },
-  {
-    "__docId__": 50,
-    "kind": "function",
+    "kind": "class",
     "name": "Gab",
     "memberof": "lib/Gab.js",
-    "generator": false,
-    "async": false,
     "static": true,
     "longname": "lib/Gab.js~Gab",
     "access": "public",
-    "export": false,
+    "export": true,
     "importPath": "gab-api-wrapper/lib/Gab.js",
-    "importStyle": null,
+    "importStyle": "Gab",
+    "description": null,
+    "lineNumber": 5,
+    "undocument": true,
+    "interface": false
+  },
+  {
+    "__docId__": 50,
+    "kind": "constructor",
+    "name": "constructor",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#constructor",
+    "access": "public",
     "description": "Create a new Gab client.",
-    "lineNumber": 13,
+    "lineNumber": 14,
     "unknown": [
       {
         "tagName": "@constructor",
@@ -657,13 +649,1082 @@
         "name": "options.timeout",
         "description": "(Optional) Specify a custom timeout. Default 5000 milliseconds."
       }
+    ]
+  },
+  {
+    "__docId__": 51,
+    "kind": "member",
+    "name": "options",
+    "memberof": "lib/Gab.js~Gab",
+    "static": false,
+    "longname": "lib/Gab.js~Gab#options",
+    "access": "public",
+    "description": null,
+    "lineNumber": 15,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 52,
+    "kind": "method",
+    "name": "me",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#me",
+    "access": "public",
+    "description": "Returns the user's account information.\nRequires 'read' scope.",
+    "lineNumber": 35,
+    "params": [],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 53,
+    "kind": "method",
+    "name": "user",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#user",
+    "access": "public",
+    "description": "Returns a user's profile.\nRequires 'read' scope.",
+    "lineNumber": 50,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
     ],
-    "return": null,
-    "ignore": true
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "username",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 54,
+    "kind": "method",
+    "name": "followers",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#followers",
+    "access": "public",
+    "description": "Returns a user's followers.\nRequires 'read' scope.",
+    "lineNumber": 68,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "username",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "before",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 55,
+    "kind": "method",
+    "name": "following",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#following",
+    "access": "public",
+    "description": "Returns a user's followed.\nRequires 'read' scope.",
+    "lineNumber": 86,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "username",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "before",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 56,
+    "kind": "method",
+    "name": "notifications",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#notifications",
+    "access": "public",
+    "description": "Returns a user's notifications.\nRequires 'notifications' scope.",
+    "lineNumber": 103,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "before",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 57,
+    "kind": "method",
+    "name": "mainFeed",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#mainFeed",
+    "access": "public",
+    "description": null,
+    "lineNumber": 114,
+    "undocument": true,
+    "params": [
+      {
+        "name": "before",
+        "optional": true,
+        "types": [
+          "string"
+        ],
+        "defaultRaw": "",
+        "defaultValue": ""
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "__docId__": 58,
+    "kind": "method",
+    "name": "userFeed",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#userFeed",
+    "access": "public",
+    "description": "Returns a user's feed.\nRequires the 'read' scope.",
+    "lineNumber": 132,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "username",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "before",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 59,
+    "kind": "method",
+    "name": "popularFeed",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#popularFeed",
+    "access": "public",
+    "description": "Returns the popular feed.\nRequires the 'read' scope.",
+    "lineNumber": 148,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 60,
+    "kind": "method",
+    "name": "popularUsers",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#popularUsers",
+    "access": "public",
+    "description": "Returns popular users.\nRequires the 'read' scope.",
+    "lineNumber": 164,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 61,
+    "kind": "method",
+    "name": "follow",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#follow",
+    "access": "public",
+    "description": "Follow a user.\nRequires the 'engage-user' scope.",
+    "lineNumber": 181,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "userId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 62,
+    "kind": "method",
+    "name": "unfollow",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#unfollow",
+    "access": "public",
+    "description": "Unfollow a user.\nRequires the 'engage-user' scope.",
+    "lineNumber": 198,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "userId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 63,
+    "kind": "method",
+    "name": "upvote",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#upvote",
+    "access": "public",
+    "description": "Upvote a post.\nRequires the 'engage-post' scope.",
+    "lineNumber": 215,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 64,
+    "kind": "method",
+    "name": "removeUpvote",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#removeUpvote",
+    "access": "public",
+    "description": "Remove an upvote for a post.\nRequires the 'engage-post' scope.",
+    "lineNumber": 232,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 65,
+    "kind": "method",
+    "name": "downvote",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#downvote",
+    "access": "public",
+    "description": "Downvote a post.\nRequires the 'engage-post' scope.",
+    "lineNumber": 249,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 66,
+    "kind": "method",
+    "name": "removeDownvote",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#removeDownvote",
+    "access": "public",
+    "description": "Remove a downvote for a post.\nRequires the 'engage-post' scope.",
+    "lineNumber": 266,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 67,
+    "kind": "method",
+    "name": "repost",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#repost",
+    "access": "public",
+    "description": "Repost a post.\nRequires the 'engage-post' scope.",
+    "lineNumber": 283,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 68,
+    "kind": "method",
+    "name": "removeRepost",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#removeRepost",
+    "access": "public",
+    "description": "Remove a repost.\nRequires the 'engage-post' scope.",
+    "lineNumber": 300,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 69,
+    "kind": "method",
+    "name": "postDetails",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#postDetails",
+    "access": "public",
+    "description": "Returns a post's details.\nRequires the 'engage-post' scope.",
+    "lineNumber": 317,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "postId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 70,
+    "kind": "method",
+    "name": "popularGroups",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#popularGroups",
+    "access": "public",
+    "description": "Returns popular groups.\nRequires the 'read' scope.",
+    "lineNumber": 333,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "params": []
+  },
+  {
+    "__docId__": 71,
+    "kind": "method",
+    "name": "groupDetails",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#groupDetails",
+    "access": "public",
+    "description": "Returns a group's details.\nRequires the 'read' scope.",
+    "lineNumber": 350,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "groupId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 72,
+    "kind": "method",
+    "name": "groupUsers",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#groupUsers",
+    "access": "public",
+    "description": "Returns a group's users.\nRequires the 'read' scope.",
+    "lineNumber": 368,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "groupId",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "before",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 73,
+    "kind": "method",
+    "name": "groupModerationLogs",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#groupModerationLogs",
+    "access": "public",
+    "description": "Returns a group's moderation logs.\nRequires the 'read' scope.",
+    "lineNumber": 385,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "groupId",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 74,
+    "kind": "method",
+    "name": "createMediaAttachment",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#createMediaAttachment",
+    "access": "public",
+    "description": "Creates a media attachment.\nRequires the 'write-posts' scope.",
+    "lineNumber": 402,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "file",
+        "description": ""
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
+  },
+  {
+    "__docId__": 75,
+    "kind": "method",
+    "name": "createPost",
+    "memberof": "lib/Gab.js~Gab",
+    "generator": false,
+    "async": false,
+    "static": false,
+    "longname": "lib/Gab.js~Gab#createPost",
+    "access": "public",
+    "description": "Create a new post.",
+    "lineNumber": 434,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Promise<object,string>}"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.media_attachments[]",
+        "description": "Media attachment ID created using createMediaAttachment. Up to four attachments."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.gif",
+        "description": "Giphy gif ID"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.body",
+        "description": "Post body"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.reply_to",
+        "description": "Id of the post to reply to."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.is_quote",
+        "description": "1 if you want to create this as a quote."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.nsfw",
+        "description": "1 if post is NSFW."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.premium_min_tier",
+        "description": "Used to mark a premium post. Amount, in cents, that user's should pay monthly for this post to be visible."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.group",
+        "description": "ID of group to post to."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.topic",
+        "description": "Topic for the post."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.poll",
+        "description": "1 if you want to add a poll. Requires poll_option_1 and poll_option_2. poll_option_3 and poll_option_4 are optional."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.poll_option_1",
+        "description": "Poll option"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.poll_option_2",
+        "description": "Poll option"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.poll_option_3",
+        "description": "Poll option"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "options.poll_option_4",
+        "description": "Poll option"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Promise<object,string>"
+      ],
+      "spread": false,
+      "description": ""
+    }
   },
   {
     "kind": "index",
-    "content": "",
+    "content": "# Gab API Wrapper\nThis wrapper allows easy access to the Gab.com API. It uses Axios to make GET, POST, and DELETE requests to their API and returns their results. All avaialble endpoints are avaialable within this wrapper.\nYou will need to use OAuth2 to retrieve your users' auth token, which is then passed into the wrapper. More information is available on their documentation.\n\n## Links\n- [Documentation](https://gavkaz.github.io/Gab-API-Wrapper/)\n- [Gab Documentation](https://developers.gab.com/)\n\n## Prerequisites\n- Register a Gab.com account at [Gab.com](https://gab.com/)\n- Purchase Pro from Gab's store. Pro is currently require to access Gab's API.\n- Visit User -> Settings and create a developer application.\n- Authenticate your user with their OAuth2 endpoint and get their auth token.\n",
     "longname": "/home/yoh/Projects/Gab-API-Wrapper/README.md",
     "name": "./README.md",
     "static": true,
@@ -671,7 +1732,7 @@
   },
   {
     "kind": "packageJSON",
-    "content": "{\n  \"name\": \"gab-api-wrapper\",\n  \"version\": \"0.1.0\",\n  \"description\": \"Easily access the Gab API after authentication\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n    \"docs\": \"./node_modules/.bin/esdoc -c .esdoc.json\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/gavKAZ/Gab-API-Wrapper.git\"\n  },\n  \"author\": \"Gavin Casdorph <gavin@casdor.ph>\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/gavKAZ/Gab-API-Wrapper/issues\"\n  },\n  \"homepage\": \"https://github.com/gavKAZ/Gab-API-Wrapper#readme\",\n  \"dependencies\": {\n    \"axios\": \"^0.18.0\"\n  },\n  \"devDependencies\": {\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-standard-plugin\": \"^1.0.0\"\n  }\n}\n",
+    "content": "{\n  \"name\": \"gab-api-wrapper\",\n  \"version\": \"0.1.0\",\n  \"description\": \"Easily access the Gab API after authentication\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n    \"docs\": \"./node_modules/.bin/esdoc -c .esdoc.json\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/gavKAZ/Gab-API-Wrapper.git\"\n  },\n  \"author\": \"Gavin Casdorph <gavin@casdor.ph>\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/gavKAZ/Gab-API-Wrapper/issues\"\n  },\n  \"homepage\": \"https://github.com/gavKAZ/Gab-API-Wrapper#readme\",\n  \"dependencies\": {\n    \"axios\": \"^0.18.0\"\n  },\n  \"devDependencies\": {\n    \"esdoc\": \"^1.1.0\",\n    \"esdoc-node\": \"^1.0.3\",\n    \"esdoc-standard-plugin\": \"^1.0.0\"\n  }\n}\n",
     "longname": "/home/yoh/Projects/Gab-API-Wrapper/package.json",
     "name": "package.json",
     "static": true,

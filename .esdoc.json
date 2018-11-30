@@ -3,6 +3,9 @@
   "destination": "./docs",
   "plugins": [
     {
+      "name": "esdoc-node"
+    },
+    {
       "name": "esdoc-standard-plugin"
     }
   ]
