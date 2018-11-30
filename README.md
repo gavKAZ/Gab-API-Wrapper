@@ -11,3 +11,27 @@ You will need to use OAuth2 to retrieve your users' auth token, which is then pa
 - Purchase Pro from Gab's store. Pro is currently require to access Gab's API.
 - Visit User -> Settings and create a developer application.
 - Authenticate your user with their OAuth2 endpoint and get their auth token.
+
+## Usage
+```js
+const Gab = require('gab-api-wrapper');
+
+const gab = new Gab({
+  auth: '<Auth Token>'
+});
+
+// .then
+gab.me()
+  .then(response => {
+    console.log(response);
+  });
+
+// async/await
+const getMe = async () => {
+  const me = await gab.me();
+
+  console.log(me);
+}
+
+getMe();
+```
