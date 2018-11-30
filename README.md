@@ -3,7 +3,7 @@ This wrapper allows easy access to the Gab.com API. It uses Axios to make GET, P
 You will need to use OAuth2 to retrieve your users' auth token, which is then passed into the wrapper. More information is available on their documentation.
 
 ## Links
-- [Documentation]()
+- [Documentation](https://gavkaz.github.io/Gab-API-Wrapper/)
 - [Gab Documentation](https://developers.gab.com/)
 
 ## Prerequisites
