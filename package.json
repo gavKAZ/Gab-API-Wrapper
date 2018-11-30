@@ -1,0 +1,25 @@
+{
+  "name": "gab-api-wrapper",
+  "version": "0.1.0",
+  "description": "Easily access the Gab API after authentication",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gavKAZ/Gab-API-Wrapper.git"
+  },
+  "author": "Gavin Casdorph <gavin@casdor.ph>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gavKAZ/Gab-API-Wrapper/issues"
+  },
+  "homepage": "https://github.com/gavKAZ/Gab-API-Wrapper#readme",
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
+  "devDependencies": {
+    "esdoc": "^1.1.0"
+  }
+}
