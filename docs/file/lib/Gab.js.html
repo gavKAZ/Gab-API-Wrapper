@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">lib/Gab.js | gab-api-wrapper</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Easily access the Gab API after authentication"><meta property="twitter:card" content="summary"><meta property="twitter:title" content="gab-api-wrapper"><meta property="twitter:description" content="Easily access the Gab API after authentication"></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/gavKAZ/Gab-API-Wrapper"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  </ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">lib/Gab.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">const axios = require(&apos;axios&apos;);
+
+let maybeJson;
+
+/**
+ * Create a new Gab client.
+ * @param options
+ * @param options.authToken - User&apos;s auth token.
+ * @param options.stringify - (Optional) If true, will return stringified JSON.
+ * @param options.timeout - (Optional) Specify a custom timeout. Default 5000 milliseconds.
+ * @constructor
+ */
+const Gab = function(options) {
+  this.options = options;
+
+  axios.defaults.baseURL = &apos;https://api.gab.com/v1.0/&apos;;
+  axios.defaults.headers.common[&apos;Authorization&apos;] = &apos;Bearer &apos; + this.options.authToken;
+  axios.defaults.responseType = &apos;json&apos;;
+  axios.defaults.timeout = options.timeout ? options.timeout : 5000;
+
+  maybeJson = obj =&gt; {
+    if(this.options.stringify) {
+      return JSON.stringify(obj);
+    }
+
+    return obj;
+  }
+};
+
+/**
+ * Returns the user&apos;s account information.
+ * Requires &apos;read&apos; scope.
+ */
+Gab.prototype.me = () =&gt; {
+  return new Promise(resolve =&gt; {
+    axios.get(&apos;me&apos;)
+      .then(response =&gt; {
+        resolve(maybeJson(response));
+      });
+  });
+};
+
+/**
+ * Returns a user&apos;s profile.
+ * Requires &apos;read&apos; scope.
+ * @param username
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.user = username =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `users/${username}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a user&apos;s followers.
+ * Requires &apos;read&apos; scope.
+ * @param username
+ * @param before
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.followers = (username, before = 0) =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `users/${username}/followers?before=${before}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a user&apos;s followed.
+ * Requires &apos;read&apos; scope.
+ * @param username
+ * @param before
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.following = (username, before = 0) =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `users/${username}/following?before=${before}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a user&apos;s notifications.
+ * Requires &apos;notifications&apos; scope.
+ * @param before
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.notifications = (before = 0) =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `notifications/?before=${before}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns the main feed.
+ * Requires &apos;read&apos; scope.
+ * @param before
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.mainFeed = (before = &apos;&apos;) =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `feed/?before=${before}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a user&apos;s feed.
+ * Requires the &apos;read&apos; scope.
+ * @param username
+ * @param before
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.userFeed = (username, before = &apos;&apos;) =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `users/${username}/feed/?before=${before}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns the popular feed.
+ * Requires the &apos;read&apos; scope.
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.popularFeed = () =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `popular/feed`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns popular users.
+ * Requires the &apos;read&apos; scope.
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.popularUsers = () =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `popular/users`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Follow a user.
+ * Requires the &apos;engage-user&apos; scope.
+ * @param userId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.follow = userId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `users/${userId}/follow`;
+
+    axios.post(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Unfollow a user.
+ * Requires the &apos;engage-user&apos; scope.
+ * @param userId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.unfollow = userId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `users/${userId}/follow`;
+
+    axios.delete(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Upvote a post.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.upvote = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}/upvote`;
+
+    axios.post(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Remove an upvote for a post.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.removeUpvote = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}/upvote`;
+
+    axios.delete(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Downvote a post.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.downvote = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}/downvote`;
+
+    axios.post(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Remove a downvote for a post.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.removeDownvote = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}/downvote`;
+
+    axios.delete(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Repost a post.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.repost = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}/repost`;
+
+    axios.post(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Remove a repost.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.removeRepost = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}/repost`;
+
+    axios.delete(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a post&apos;s details.
+ * Requires the &apos;engage-post&apos; scope.
+ * @param postId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.postDetails = postId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts/${postId}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns popular groups.
+ * Requires the &apos;read&apos; scope.
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.popularGroups = () =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `groups`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a group&apos;s details.
+ * Requires the &apos;read&apos; scope.
+ * @param groupId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.groupDetails = groupId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `groups/${groupId}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a group&apos;s users.
+ * Requires the &apos;read&apos; scope.
+ * @param groupId
+ * @param before
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.groupUsers = (groupId, before = 0) =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `groups/${groupId}/users?before=${before}`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Returns a group&apos;s moderation logs.
+ * Requires the &apos;read&apos; scope.
+ * @param groupId
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.groupModerationLogs = groupId =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `groups/${groupId}/moderation-logs`;
+
+    axios.get(url)
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Creates a media attachment.
+ * Requires the &apos;write-posts&apos; scope.
+ * @param file
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.createMediaAttachment = file =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `media-attachments/images`;
+
+    axios.post(url, {
+      file: file
+    })
+      .then(response =&gt; {
+        resolve(maybeJson(response.data));
+      });
+  });
+};
+
+/**
+ * Create a new post.
+ * @param options
+ * @param options.media_attachments[] - Media attachment ID created using createMediaAttachment. Up to four attachments.
+ * @param options.gif - Giphy gif ID
+ * @param options.body - Post body
+ * @param options.reply_to - Id of the post to reply to.
+ * @param options.is_quote - 1 if you want to create this as a quote.
+ * @param options.nsfw - 1 if post is NSFW.
+ * @param options.premium_min_tier - Used to mark a premium post. Amount, in cents, that user&apos;s should pay monthly for this post to be visible.
+ * @param options.group - ID of group to post to.
+ * @param options.topic - Topic for the post.
+ * @param options.poll - 1 if you want to add a poll. Requires poll_option_1 and poll_option_2. poll_option_3 and poll_option_4 are optional.
+ * @param options.poll_option_1 - Poll option
+ * @param options.poll_option_2 - Poll option
+ * @param options.poll_option_3 - Poll option
+ * @param options.poll_option_4 - Poll option
+ * @returns {Promise&lt;object,string&gt;}
+ */
+Gab.prototype.createPost = options =&gt; {
+  return new Promise(resolve =&gt; {
+    const url = `posts`;
+
+    axios.post(url, options)
+      .then((response,) =&gt; {
+        resolve(maybeJson(response.data));
+      })
+      .catch(e =&gt; {
+        console.log(e);
+      });
+  });
+};
+
+module.exports = Gab;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

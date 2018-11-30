@@ -4,7 +4,8 @@
   "description": "Easily access the Gab API after authentication",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "./node_modules/.bin/esdoc -c .esdoc.json"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
     "axios": "^0.18.0"
   },
   "devDependencies": {
-    "esdoc": "^1.1.0"
+    "esdoc": "^1.1.0",
+    "esdoc-standard-plugin": "^1.0.0"
   }
 }
