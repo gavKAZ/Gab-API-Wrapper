@@ -1,6 +1,6 @@
 {
   "name": "gab-api-wrapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Easily access the Gab API after authentication",
   "main": "index.js",
   "scripts": {

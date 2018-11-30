@@ -12,6 +12,11 @@ You will need to use OAuth2 to retrieve your users' auth token, which is then pa
 - Visit User -> Settings and create a developer application.
 - Authenticate your user with their OAuth2 endpoint and get their auth token.
 
+## Installation
+```
+npm install gab-api-wrapper
+```
+
 ## Usage
 ```js
 const Gab = require('gab-api-wrapper');
